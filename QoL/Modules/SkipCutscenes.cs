@@ -19,9 +19,6 @@ namespace QoL.Modules
         #region Settings
 
         [SerializeToSetting]
-        public static bool DreamersGet = true;
-
-        [SerializeToSetting]
         public static bool AbsoluteRadiance = true;
 
         [SerializeToSetting]
@@ -53,9 +50,6 @@ namespace QoL.Modules
 
         [SerializeToSetting]
         public static bool AutoSkipCinematics = true;
-
-        [SerializeToSetting]
-        public static bool AllowSkippingNonskippable = true;
 
         [SerializeToSetting]
         public static bool SkipCutscenesWithoutPrompt = true;
@@ -94,7 +88,6 @@ namespace QoL.Modules
 
         private static readonly (Func<bool>, Func<Scene, IEnumerator>)[] FSM_SKIPS =
         {
-            (() => DreamersGet, DreamerFsm),
             (() => AbsoluteRadiance, AbsRadSkip),
             (() => PureVesselRoar, HKPrimeSkip),
             (() => HallOfGodsStatues, StatueWait),
@@ -284,20 +277,6 @@ namespace QoL.Modules
             control.GetAction<Wait>("Title Up").time = 1f;
         }
 
-        private static IEnumerator DreamerFsm(Scene arg1)
-        {
-            if (!DREAMERS.Contains(arg1.name)) yield break;
-
-            yield return null;
-
-            GameObject dreamEnter = GameObject.Find("Dream Enter");
-
-            if (dreamEnter == null)
-                yield break;
-
-            dreamEnter.LocateMyFSM("Control").GetState("Idle").ChangeTransition("DREAM HIT", "Change Scene");
-        }
-
         private static IEnumerator AbyssShriekPickup(Scene arg1)
         {
             if (arg1.name != "Abyss_12") yield break;
@@ -363,72 +342,14 @@ namespace QoL.Modules
                 info.EntryDelay = 0f;
             }
 
-            if (!DreamersGet || info.SceneName.Length <= 15 || info.SceneName.Substring(0, 15) != GUARDIAN)
-            {
-                yield return orig(self, info);
-
-                yield break;
-            }
-
-            string @bool = info.SceneName.Substring(15);
-
-            PlayerData pd = PlayerData.instance;
-
-            pd.SetBool($"{@bool.ToLower()}Defeated", true);
-            pd.SetBool($"maskBroken{@bool}", true);
-            pd.guardiansDefeated++;
-            pd.crossroadsInfected = true;
-
-            if (pd.guardiansDefeated == 3)
-            {
-                pd.mrMushroomState = 1;
-                pd.brettaState++;
-
-                foreach (string pdBool in ALL_DREAMER_BOOLS)
-                    pd.SetBool(pdBool, true);
-            }
-
-            info.SceneName = GameManager.instance.sceneName;
-            info.EntryGateName = "door_dreamReturn";
-
-            GameCameras.instance.cameraFadeFSM.Fsm.Event("FADE INSTANT");
-
             yield return orig(self, info);
 
-            GameCameras.instance.cameraFadeFSM.Fsm.SetState("FadeIn");
-
-            yield return null;
-
-            HeroController.instance.MaxHealth();
-
-            while (GameManager.instance.gameState != GameState.PLAYING)
-            {
-                yield return null;
-            }
-
-            yield return null;
-
-            PlayMakerFSM.BroadcastEvent("BOX DOWN");
-            PlayMakerFSM.BroadcastEvent("BOX DOWN DREAM");
-
-            string sceneName = GameManager.instance.sceneName;
-            string respawnMarker = sceneName == "Deepnest_Spider_Town" ? "Death Respawn Marker Hegemol" : "Death Respawn Marker";
-            HeroController.instance.SetBenchRespawn(respawnMarker, sceneName, 0, true);
-            if (sceneName == "Ruins2_Watcher_Room") GameManager.instance.SetCurrentMapZoneAsRespawn();
-            if (sceneName == "Deepnest_Spider_Town") PlayerData.instance.SetBool(nameof(PlayerData.spiderCapture), true);
-
-            GameManager.instance.SaveGame();
-
-            HeroController.instance.AcceptInput();
+            yield break;
         }
 
         private static void OnSetSkip(On.InputHandler.orig_SetSkipMode orig, InputHandler self, SkipPromptMode newmode)
         {
-            if (AllowSkippingNonskippable && newmode is not (SkipPromptMode.SKIP_INSTANT or SkipPromptMode.SKIP_PROMPT))
-            {
-                newmode = SkipCutscenesWithoutPrompt ? SkipPromptMode.SKIP_INSTANT : SkipPromptMode.SKIP_PROMPT;
-            }
-            else if (SkipCutscenesWithoutPrompt && newmode == SkipPromptMode.SKIP_PROMPT)
+            if (SkipCutscenesWithoutPrompt && newmode == SkipPromptMode.SKIP_PROMPT)
             {
                 newmode = SkipPromptMode.SKIP_INSTANT;
             }
