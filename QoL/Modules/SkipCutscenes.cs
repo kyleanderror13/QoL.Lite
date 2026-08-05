@@ -43,9 +43,6 @@ namespace QoL.Modules
         public static bool PureVesselRoar = true;
 
         [SerializeToSetting]
-        public static bool FirstTimeBosses = true;
-
-        [SerializeToSetting]
         public static bool FirstCharm = true;
 
         [SerializeToSetting]
@@ -97,16 +94,6 @@ namespace QoL.Modules
             (() => BlackEggOpen, BlackEgg)
         };
 
-        // Boss cutscenes
-        private static readonly string[] PD_BOOLS =
-        {
-            nameof(PlayerData.unchainedHollowKnight),
-            nameof(PlayerData.encounteredMimicSpider),
-            nameof(PlayerData.infectedKnightEncountered),
-            nameof(PlayerData.mageLordEncountered),
-            nameof(PlayerData.mageLordEncountered_2),
-        };
-
         public override void Initialize()
         {
             On.CinematicSequence.Begin += CinematicBegin;
@@ -142,14 +129,6 @@ namespace QoL.Modules
 
             if (GodhomeEntry)
                 PlayerData.instance.SetBool(nameof(PlayerData.enteredGGAtrium), true);
-
-            if (!FirstTimeBosses)
-                return;
-
-            foreach (string @bool in PD_BOOLS)
-            {
-                PlayerData.instance.SetBool(@bool, true);
-            }
         }
 
         private static IEnumerator NoFade(On.GameManager.orig_FadeSceneInWithDelay orig, GameManager self, float delay)
