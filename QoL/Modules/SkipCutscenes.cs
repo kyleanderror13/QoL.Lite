@@ -50,30 +50,6 @@ namespace QoL.Modules
 
         #endregion
 
-        private const string GUARDIAN = "Dream_Guardian_";
-
-        private static readonly string[] DREAMERS = { "Deepnest_Spider_Town", "Fungus3_archive_02", "Ruins2_Watcher_Room" };
-
-        private static readonly string[] ALL_DREAMER_BOOLS =
-        {
-            nameof(PlayerData.corniferAtHome),
-            nameof(PlayerData.iseldaConvo1),
-            nameof(PlayerData.dungDefenderSleeping),
-            nameof(PlayerData.corn_crossroadsLeft),
-            nameof(PlayerData.corn_greenpathLeft),
-            nameof(PlayerData.corn_fogCanyonLeft),
-            nameof(PlayerData.corn_fungalWastesLeft),
-            nameof(PlayerData.corn_cityLeft),
-            nameof(PlayerData.corn_waterwaysLeft),
-            nameof(PlayerData.corn_minesLeft),
-            nameof(PlayerData.corn_cliffsLeft),
-            nameof(PlayerData.corn_deepnestLeft),
-            nameof(PlayerData.corn_outskirtsLeft),
-            nameof(PlayerData.corn_royalGardensLeft),
-            nameof(PlayerData.corn_abyssLeft),
-            nameof(PlayerData.metIselda),
-        };
-
         private static readonly (Func<bool>, Func<Scene, IEnumerator>)[] FSM_SKIPS =
         {
             (() => HallOfGodsStatues, StatueWait),
