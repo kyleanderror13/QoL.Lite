@@ -11,14 +11,14 @@ using Vasi;
 namespace QoL
 {
   [UsedImplicitly]
-  public class QoL : Mod, ITogglableMod, IGlobalSettings<Settings>, ICustomMenuMod
+  public class QoLLite : Mod, ITogglableMod, IGlobalSettings<Settings>, ICustomMenuMod
   {
-    public QoL() : base()
+    public QoLLite() : base()
     {
       typeof(SettingsOverride).ModInterop();
     }
 
-    public override string GetVersion() => VersionUtil.GetVersion<QoL>();
+    public override string GetVersion() => VersionUtil.GetVersion<QoLLite>();
 
     internal static Settings GlobalSettings { get; private set; } = new();
 
@@ -40,7 +40,7 @@ namespace QoL
 
     public override void Initialize()
     {
-      foreach (Type t in Assembly.GetAssembly(typeof(QoL)).GetTypes().Where(x => x.IsSubclassOf(typeof(FauxMod))))
+      foreach (Type t in Assembly.GetAssembly(typeof(QoLLite)).GetTypes().Where(x => x.IsSubclassOf(typeof(FauxMod))))
       {
         var fm = (FauxMod)Activator.CreateInstance(t);
 

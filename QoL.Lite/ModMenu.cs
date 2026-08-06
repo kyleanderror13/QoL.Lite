@@ -92,8 +92,8 @@ namespace QoL
           I18n.Get(name),
           Bools,
           string.Empty,
-          i => QoL.ToggleModule(name, Convert.ToBoolean(i)),
-          () => Convert.ToInt32(QoL.GlobalSettings.EnabledModules[name])
+          i => QoLLite.ToggleModule(name, Convert.ToBoolean(i)),
+          () => Convert.ToInt32(QoLLite.GlobalSettings.EnabledModules[name])
       );
 
       return _TogglableModuleNames
@@ -108,7 +108,7 @@ namespace QoL
 
       List<IMenuMod.MenuEntry> li = new();
 
-      foreach ((FieldInfo fi, Type t) in QoL.GlobalSettings.Fields)
+      foreach ((FieldInfo fi, Type t) in QoLLite.GlobalSettings.Fields)
       {
         if (fi.FieldType != typeof(bool) || SettingsOverride.TryGetSettingOverride($"{t.Name}:{fi.Name}", out _))
           continue;

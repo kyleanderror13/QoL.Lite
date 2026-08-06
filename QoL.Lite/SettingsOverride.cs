@@ -51,11 +51,11 @@ namespace QoL
       if (name == null || !_Modules.Contains(name))
         throw new ArgumentException("Name does not correspond to any togglable QoL module.", nameof(name));
 
-      if (QoL.GlobalSettings.EnabledModules.TryGetValue(name, out bool value) && !_OrigEnabledModules.ContainsKey(name))
+      if (QoLLite.GlobalSettings.EnabledModules.TryGetValue(name, out bool value) && !_OrigEnabledModules.ContainsKey(name))
         _OrigEnabledModules[name] = value;
 
       _ModuleOverrides[name] = enable;
-      QoL.ToggleModule(name, enable);
+      QoLLite.ToggleModule(name, enable);
     }
 
     public static void OverrideSettingToggle(string type, string field, bool enable)
@@ -73,7 +73,7 @@ namespace QoL
       fi.SetValue(null, enable);
     }
 
-    public static void RemoveModuleOverride(string name) => RemoveOverride(name, _ModuleOverrides, _OrigEnabledModules, QoL.ToggleModule);
+    public static void RemoveModuleOverride(string name) => RemoveOverride(name, _ModuleOverrides, _OrigEnabledModules, QoLLite.ToggleModule);
 
     public static void RemoveSettingOverride(string type, string field) =>
         RemoveOverride($"{type}:{field}", _SettingOverrides, _OrigSettings, (k, v) => _Fields[k].SetValue(null, v));

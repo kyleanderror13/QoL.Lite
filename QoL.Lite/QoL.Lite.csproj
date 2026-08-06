@@ -2,9 +2,9 @@
     <PropertyGroup>
         <ProjectGuid>{F039FA1D-A12D-4672-BF0A-60CF7900EE21}</ProjectGuid>
         <TargetFramework>net472</TargetFramework>
-        <AssemblyTitle>QoL</AssemblyTitle>
-        <AssemblyVersion>4.9.0</AssemblyVersion>
-        <Product>QoL</Product>
+        <AssemblyTitle>QoL.Lite</AssemblyTitle>
+        <AssemblyVersion>1.0.0</AssemblyVersion>
+        <Product>QoL.Lite</Product>
         <Copyright>Copyright © Yusuf Bham 2021</Copyright>
         <OutputPath>bin\$(Configuration)\</OutputPath>
         <LangVersion>latest</LangVersion>
@@ -12,8 +12,8 @@
     </PropertyGroup>
     
     <PropertyGroup>
-        <HollowKnightRefs>..\..\..\References</HollowKnightRefs>
-        <CopyOutputDir>D:/Steam/steamapps/common/Hollow Knight/hollow_knight_Data/Managed</CopyOutputDir>
+        <HollowKnightRefs>C:\Program Files (x86)\Steam\steamapps\common\Hollow Knight\hollow_knight_Data\Managed</HollowKnightRefs>
+        <CopyOutputDir>C:/Steam/steamapps/common/Hollow Knight/hollow_knight_Data/Managed</CopyOutputDir>
     </PropertyGroup>
 
     <Import Project="LocalBuildProperties.props" Condition="Exists('LocalBuildProperties.props')" />
