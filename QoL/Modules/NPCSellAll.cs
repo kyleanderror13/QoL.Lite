@@ -20,7 +20,6 @@ namespace QoL.Modules
         [SerializeToSetting]
         public static bool NailsmithBuyAll = true;
 
-        private const int EGG_COST = 450;
         private static readonly int[] RELIC_COST = { 200, 450, 800, 1200 };
         private static readonly (int ore, int geo)[] NAIL_UPGRADE_COSTS =
         {
@@ -117,7 +116,7 @@ namespace QoL.Modules
             if (amount == 0) 
                 return;
 
-            int price = amount * EGG_COST;
+            int price = amount * Random.Range(290, 450);
 
             pd.SetInt(nameof(pd.jinnEggsSold), pd.GetInt(nameof(pd.jinnEggsSold)) + amount);
             pd.SetInt(nameof(pd.rancidEggs), 0);
