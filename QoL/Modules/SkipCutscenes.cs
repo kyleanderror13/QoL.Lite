@@ -19,9 +19,6 @@ namespace QoL.Modules
         #region Settings
 
         [SerializeToSetting]
-        public static bool AbsoluteRadiance = true;
-
-        [SerializeToSetting]
         public static bool AbyssShriekGet = true;
 
         [SerializeToSetting]
@@ -40,9 +37,6 @@ namespace QoL.Modules
         public static bool GodhomeEntry = true;
 
         [SerializeToSetting]
-        public static bool PureVesselRoar = true;
-
-        [SerializeToSetting]
         public static bool FirstCharm = true;
 
         [SerializeToSetting]
@@ -53,9 +47,6 @@ namespace QoL.Modules
 
         [SerializeToSetting]
         public static bool InstantSceneFadeIns = true;
-
-        [SerializeToSetting]
-        public static bool SoulMasterPhaseTransitionSkip = true;
 
         #endregion
 
@@ -85,8 +76,6 @@ namespace QoL.Modules
 
         private static readonly (Func<bool>, Func<Scene, IEnumerator>)[] FSM_SKIPS =
         {
-            (() => AbsoluteRadiance, AbsRadSkip),
-            (() => PureVesselRoar, HKPrimeSkip),
             (() => HallOfGodsStatues, StatueWait),
             (() => StagArrive, StagCutscene),
             (() => AbyssShriekGet, AbyssShriekPickup),
@@ -103,7 +92,6 @@ namespace QoL.Modules
             On.GameManager.BeginSceneTransitionRoutine += OnBeginSceneTransition;
             On.HutongGames.PlayMaker.Actions.EaseColor.OnEnter += FastEaseColor;
             On.GameManager.FadeSceneInWithDelay += NoFade;
-            On.GGCheckIfBossScene.OnEnter += MageLordPhaseTransitionSkip;
             ModHooks.NewGameHook += OnNewGame;
             UnityEngine.SceneManagement.SceneManager.activeSceneChanged += FsmSkips;
         }
@@ -117,7 +105,6 @@ namespace QoL.Modules
             On.GameManager.BeginSceneTransitionRoutine -= OnBeginSceneTransition;
             On.HutongGames.PlayMaker.Actions.EaseColor.OnEnter -= FastEaseColor;
             On.GameManager.FadeSceneInWithDelay -= NoFade;
-            On.GGCheckIfBossScene.OnEnter -= MageLordPhaseTransitionSkip;
             UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= FsmSkips;
             ModHooks.NewGameHook -= OnNewGame;
         }
@@ -146,24 +133,6 @@ namespace QoL.Modules
             orig(self);
         }
         
-        // Skips the "flashing lights cutscene" in the middle of the Soul Master/Tyrant fight
-        // https://github.com/fifty-six/HollowKnight.QoL/issues/31
-        private static void MageLordPhaseTransitionSkip(On.GGCheckIfBossScene.orig_OnEnter orig, GGCheckIfBossScene self)
-        {
-            if (
-                !SoulMasterPhaseTransitionSkip
-                || !self.Owner.transform.name.Contains("Corpse Mage")
-                || !self.Fsm.ActiveStateName.Contains("Quick Death?")
-                || self.Fsm.ActiveState.Actions[1] is not PlayerDataBoolTest p
-            )
-            {
-                orig(self);
-                return;
-            }
-
-            self.Fsm.Event(p.isTrue);
-        }
-
         private static void FsmSkips(Scene arg0, Scene arg1)
         {
             var hc = HeroController.instance;
@@ -219,41 +188,6 @@ namespace QoL.Modules
 
                 fsm.GetState("Dream Box Down").InsertAction(0, fsm.GetAction<SetPlayerDataString>("Impact"));
             }
-        }
-
-        private static IEnumerator HKPrimeSkip(Scene arg1)
-        {
-            if (arg1.name != "GG_Hollow_Knight") yield break;
-
-            yield return null;
-
-            PlayMakerFSM control = GameObject.Find("HK Prime").LocateMyFSM("Control");
-
-            control.GetState("Init").ChangeTransition("FINISHED", "Intro Roar");
-            control.GetAction<Wait>("Intro 2").time = 0.01f;
-            control.GetAction<Wait>("Intro 1").time = 0.01f;
-            control.GetAction<Wait>("Intro Roar").time = 1f;
-        }
-
-        private static IEnumerator AbsRadSkip(Scene arg1)
-        {
-            if (arg1.name != "GG_Radiance") yield break;
-
-            yield return null;
-
-            PlayMakerFSM control = GameObject.Find("Boss Control").LocateMyFSM("Control");
-
-            UObject.Destroy(GameObject.Find("Sun"));
-            UObject.Destroy(GameObject.Find("feather_particles"));
-
-            FsmState setup = control.GetState("Setup");
-
-            setup.GetAction<Wait>().time = 1.5f;
-            setup.RemoveAction<SetPlayerDataBool>();
-            setup.RemoveAction(4);
-            setup.ChangeTransition("FINISHED", "Eye Flash");
-
-            control.GetAction<Wait>("Title Up").time = 1f;
         }
 
         private static IEnumerator AbyssShriekPickup(Scene arg1)
