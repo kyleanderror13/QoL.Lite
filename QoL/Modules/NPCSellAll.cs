@@ -116,7 +116,9 @@ namespace QoL.Modules
             if (amount == 0) 
                 return;
 
-            int price = amount * Random.Range(290, 450);
+            var price = 0;
+            for (var _ = 0; _ < amount; _++)
+              price += Random.Range(290, 450);
 
             pd.SetInt(nameof(pd.jinnEggsSold), pd.GetInt(nameof(pd.jinnEggsSold)) + amount);
             pd.SetInt(nameof(pd.rancidEggs), 0);
