@@ -11,7 +11,6 @@ namespace QoL.Modules
     {
       On.DialogueBox.ShowNextChar += OnNextChar;
     }
-
     public override void Unload()
     {
       On.DialogueBox.ShowNextChar -= OnNextChar;

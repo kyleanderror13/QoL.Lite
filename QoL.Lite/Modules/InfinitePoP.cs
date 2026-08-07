@@ -15,6 +15,13 @@ namespace QoL.Modules
 
       UnityEngine.SceneManagement.SceneManager.activeSceneChanged += OnSceneChanged;
     }
+    public override void Unload()
+    {
+      ModHooks.GetPlayerBoolHook -= GetBool;
+      ModHooks.SetPlayerBoolHook -= SetBool;
+
+      UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= OnSceneChanged;
+    }
 
     private static void OnSceneChanged(Scene arg0, Scene arg1)
     {
@@ -27,7 +34,6 @@ namespace QoL.Modules
         Object.Destroy(blocker);
       }
     }
-
     private static bool SetBool(string field, bool value)
     {
       if (field != nameof(PlayerData.newDataBindingSeal) || !value)
@@ -59,18 +65,9 @@ namespace QoL.Modules
       // Make sure the set doesn't change the save.
       return PlayerData.instance.newDataBindingSeal;
     }
-
     private static bool GetBool(string originalset, bool orig)
     {
       return originalset == nameof(PlayerData.newDataBindingSeal) || orig;
-    }
-
-    public override void Unload()
-    {
-      ModHooks.GetPlayerBoolHook -= GetBool;
-      ModHooks.SetPlayerBoolHook -= SetBool;
-
-      UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= OnSceneChanged;
     }
   }
 }

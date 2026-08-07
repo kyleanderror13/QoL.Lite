@@ -11,29 +11,10 @@ namespace QoL.Modules
   [UsedImplicitly]
   public class NPCSellAll : FauxMod
   {
-    [SerializeToSetting]
-    public static bool LemmSellAll = true;
-
-    [SerializeToSetting]
-    public static bool JinnSellAll = true;
-
-    [SerializeToSetting]
-    public static bool NailsmithBuyAll = true;
-
-    private static readonly int[] RELIC_COST = { 200, 450, 800, 1200 };
-    private static readonly (int ore, int geo)[] NAIL_UPGRADE_COSTS =
-    {
-            (0, 250),
-            (1, 800),
-            (2, 2000),
-            (3, 4000)
-        };
-
     public override void Initialize()
     {
       UnityEngine.SceneManagement.SceneManager.sceneLoaded += PatchVendorNPCs;
     }
-
     public override void Unload()
     {
       UnityEngine.SceneManagement.SceneManager.sceneLoaded -= PatchVendorNPCs;
@@ -43,18 +24,17 @@ namespace QoL.Modules
     {
       switch (scene.name)
       {
-        case "Ruins1_05b" when LemmSellAll:
+        case "Ruins1_05b":
           LemmSell(scene);
           break;
-        case "Room_Jinn" when JinnSellAll:
+        case "Room_Jinn":
           JinnSell(scene);
           break;
-        case "Room_nailsmith" when NailsmithBuyAll:
+        case "Room_nailsmith":
           NailsmithBuy(scene);
           break;
       }
     }
-
     private static void LemmSell(Scene scene)
     {
       GameObject? lemm = scene.GetRootGameObjects().FirstOrDefault(obj => obj.name == "Relic Dealer");
@@ -66,7 +46,6 @@ namespace QoL.Modules
           .GetState("Convo End")
           .AddMethod(SellRelics);
     }
-
     private static void SellRelics()
     {
       var pd = PlayerData.instance;
@@ -89,7 +68,6 @@ namespace QoL.Modules
         HeroController.instance.AddGeo(price);
       }
     }
-
     private static void JinnSell(Scene scene)
     {
       GameObject? jinn = scene.GetRootGameObjects().FirstOrDefault(obj => obj.name == "Jinn NPC");
@@ -106,7 +84,6 @@ namespace QoL.Modules
           .GetState("Talk Finish")
           .InsertMethod(0, SellEggs);
     }
-
     private static void SellEggs()
     {
       var pd = PlayerData.instance;
@@ -125,7 +102,6 @@ namespace QoL.Modules
 
       HeroController.instance.AddGeo(price);
     }
-
     private static void NailsmithBuy(Scene scene)
     {
       bool right = false;
@@ -152,7 +128,6 @@ namespace QoL.Modules
         right = 18.5f < heroMin;
       });
     }
-
     private static bool BuyNailUpgrades()
     {
       var pd = PlayerData.instance;
@@ -192,5 +167,14 @@ namespace QoL.Modules
 
       return true;
     }
+
+    private static readonly int[] RELIC_COST = { 200, 450, 800, 1200 };
+    private static readonly (int ore, int geo)[] NAIL_UPGRADE_COSTS =
+    {
+      (0, 250),
+      (1, 800),
+      (2, 2000),
+      (3, 4000)
+    };
   }
 }

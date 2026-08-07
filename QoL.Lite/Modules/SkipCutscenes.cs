@@ -16,49 +16,6 @@ namespace QoL.Modules
   [UsedImplicitly]
   public class SkipCutscenes : FauxMod
   {
-    #region Settings
-
-    [SerializeToSetting]
-    public static bool AbyssShriekGet = true;
-
-    [SerializeToSetting]
-    public static bool AfterKingsBrandGet = true;
-
-    [SerializeToSetting]
-    public static bool BlackEggOpen = true;
-
-    [SerializeToSetting]
-    public static bool StagArrive = true;
-
-    [SerializeToSetting]
-    public static bool HallOfGodsStatues = true;
-
-    [SerializeToSetting]
-    public static bool GodhomeEntry = true;
-
-    [SerializeToSetting]
-    public static bool FirstCharm = true;
-
-    [SerializeToSetting]
-    public static bool AutoSkipCinematics = true;
-
-    [SerializeToSetting]
-    public static bool SkipCutscenesWithoutPrompt = true;
-
-    [SerializeToSetting]
-    public static bool InstantSceneFadeIns = true;
-
-    #endregion
-
-    private static readonly (Func<bool>, Func<Scene, IEnumerator>)[] FSM_SKIPS =
-    {
-            (() => HallOfGodsStatues, StatueWait),
-            (() => StagArrive, StagCutscene),
-            (() => AbyssShriekGet, AbyssShriekPickup),
-            (() => AfterKingsBrandGet, KingsBrand),
-            (() => BlackEggOpen, BlackEgg)
-        };
-
     public override void Initialize()
     {
       On.CinematicSequence.Begin += CinematicBegin;
@@ -71,7 +28,6 @@ namespace QoL.Modules
       ModHooks.NewGameHook += OnNewGame;
       UnityEngine.SceneManagement.SceneManager.activeSceneChanged += FsmSkips;
     }
-
     public override void Unload()
     {
       On.CinematicSequence.Begin -= CinematicBegin;
@@ -87,41 +43,29 @@ namespace QoL.Modules
 
     private static void OnNewGame()
     {
-      if (FirstCharm)
-        PlayerData.instance.SetBool(nameof(PlayerData.hasCharm), true);
-
-      if (GodhomeEntry)
-        PlayerData.instance.SetBool(nameof(PlayerData.enteredGGAtrium), true);
+      PlayerData.instance.SetBool(nameof(PlayerData.hasCharm), true);
+      PlayerData.instance.SetBool(nameof(PlayerData.enteredGGAtrium), true);
     }
-
     private static IEnumerator NoFade(On.GameManager.orig_FadeSceneInWithDelay orig, GameManager self, float delay)
     {
-      yield return orig(self, InstantSceneFadeIns ? 0 : delay);
+      yield return orig(self, 0);
     }
-
     private static void FastEaseColor(On.HutongGames.PlayMaker.Actions.EaseColor.orig_OnEnter orig, EaseColor self)
     {
-      if (InstantSceneFadeIns && self.Owner.name == "Blanker White" && Math.Abs(self.time.Value - 0.3) < .05)
-      {
+      if (self.Owner.name == "Blanker White" && Math.Abs(self.time.Value - 0.3) < .05)
         self.time.Value = 0.066f;
-      }
 
       orig(self);
     }
-
     private static void FsmSkips(Scene arg0, Scene arg1)
     {
       var hc = HeroController.instance;
 
       if (hc == null) return;
 
-      foreach (var (check, coro) in FSM_SKIPS)
-      {
-        if (check())
-          hc.StartCoroutine(coro(arg1));
-      }
+      foreach (var Coroutine in new[] { StatueWait, StagCutscene, AbyssShriekPickup, KingsBrand, BlackEgg })
+        hc.StartCoroutine(Coroutine(arg1));
     }
-
     private static IEnumerator StagCutscene(Scene _)
     {
       yield return null;
@@ -152,7 +96,6 @@ namespace QoL.Modules
 
       grate_anim.GetClipByName("Grate_disappear").fps = 600;
     }
-
     private static IEnumerator StatueWait(Scene arg1)
     {
       if (arg1.name != "GG_Workshop") yield break;
@@ -165,7 +108,6 @@ namespace QoL.Modules
         fsm.GetState("Dream Box Down").InsertAction(0, fsm.GetAction<SetPlayerDataString>("Impact"));
       }
     }
-
     private static IEnumerator AbyssShriekPickup(Scene arg1)
     {
       if (arg1.name != "Abyss_12") yield break;
@@ -177,13 +119,11 @@ namespace QoL.Modules
       shriek.GetState("Get Pause").RemoveAllOfType<Wait>();
       shriek.GetState("Land").RemoveAllOfType<Wait>();
     }
-
     private static IEnumerator KingsBrand(Scene arg1)
     {
       yield return KingsBrandHornet(arg1);
       yield return KingsBrandAvalanche(arg1);
     }
-
     private static IEnumerator KingsBrandHornet(Scene arg1)
     {
       if (arg1.name != "Deepnest_East_12") yield break;
@@ -196,7 +136,6 @@ namespace QoL.Modules
       hornet.GetState("Fade In").RemoveAllOfType<Wait>();
       hornet.GetState("Land").RemoveAllOfType<Wait>();
     }
-
     private static IEnumerator KingsBrandAvalanche(Scene arg1)
     {
       if (arg1.name != "Room_Wyrm") yield break;
@@ -206,7 +145,6 @@ namespace QoL.Modules
       PlayMakerFSM avalanche = GameObject.Find("Avalanche End").LocateMyFSM("Control");
       avalanche.GetState("Fade").GetAction<Wait>().time = 1;
     }
-
     private static IEnumerator BlackEgg(Scene arg1)
     {
       if (arg1.name != "Room_temple") yield break;
@@ -223,51 +161,34 @@ namespace QoL.Modules
       door.GetState("Roar").RemoveAllOfType<Wait>();
       door.GetState("Roar End").GetAction<Wait>().time = 1;
     }
-
     private static IEnumerator OnBeginSceneTransition(On.GameManager.orig_BeginSceneTransitionRoutine orig, GameManager self, GameManager.SceneLoadInfo info)
     {
-      if (InstantSceneFadeIns)
-      {
-        info.EntryDelay = 0f;
-      }
+      info.EntryDelay = 0f;
 
       yield return orig(self, info);
 
       yield break;
     }
-
     private static void OnSetSkip(On.InputHandler.orig_SetSkipMode orig, InputHandler self, SkipPromptMode newmode)
     {
-      if (SkipCutscenesWithoutPrompt && newmode == SkipPromptMode.SKIP_PROMPT)
+      if (newmode == SkipPromptMode.SKIP_PROMPT)
       {
         newmode = SkipPromptMode.SKIP_INSTANT;
       }
 
       orig(self, newmode);
     }
-
     private static void AnimatorBegin(On.AnimatorSequence.orig_Begin orig, AnimatorSequence self)
     {
-      if (AutoSkipCinematics)
-        self.Skip();
-      else
-        orig(self);
+      self.Skip();
     }
-
     private static void FadeBegin(On.FadeSequence.orig_Begin orig, FadeSequence self)
     {
-      if (AutoSkipCinematics)
-        self.Skip();
-      else
-        orig(self);
+      self.Skip();
     }
-
     private static void CinematicBegin(On.CinematicSequence.orig_Begin orig, CinematicSequence self)
     {
-      if (AutoSkipCinematics)
-        self.Skip();
-      else
-        orig(self);
+      self.Skip();
     }
   }
 }

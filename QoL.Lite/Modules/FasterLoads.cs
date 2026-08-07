@@ -11,10 +11,6 @@ namespace QoL.Modules
   [UsedImplicitly]
   public class FasterLoads : FauxMod
   {
-    private static readonly float[] SKIP = { 0.4f, .165f };
-
-    private ILHook? _hook;
-
     public override void Initialize()
     {
       Unload();
@@ -24,6 +20,10 @@ namespace QoL.Modules
           typeof(HeroController).GetMethod(nameof(HeroController.EnterScene)).GetStateMachineTarget(),
           EnterScene
       );
+    }
+    public override void Unload()
+    {
+      _hook?.Dispose();
     }
 
     private static void EnterScene(ILContext il)
@@ -48,9 +48,8 @@ namespace QoL.Modules
       }
     }
 
-    public override void Unload()
-    {
-      _hook?.Dispose();
-    }
+    private static readonly float[] SKIP = { 0.4f, .165f };
+
+    private ILHook? _hook;
   }
 }

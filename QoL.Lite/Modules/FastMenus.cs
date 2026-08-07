@@ -13,7 +13,6 @@ namespace QoL.Modules
     {
       UIManager.instance.MENU_FADE_SPEED = 14f;
     }
-
     public override void Unload()
     {
       UIManager.instance.MENU_FADE_SPEED = 3.2f;

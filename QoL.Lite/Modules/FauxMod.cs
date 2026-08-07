@@ -9,24 +9,13 @@ namespace QoL.Modules
   {
     public bool DefaultState { get; } = true;
 
-    protected FauxMod() { }
-
-    protected FauxMod(bool enabled) => DefaultState = enabled;
-
-    [PublicAPI]
-    internal void Log(object obj) => Logger.Log($"[QoL : {GetType().Name}] - {obj}");
-
-    internal bool IsLoaded { get; set; }
-
     public virtual void Initialize() { }
-
     public virtual void Unload() { }
 
     public static bool IsToggleableFauxMod(Type t)
     {
       return t.IsSubclassOf(typeof(FauxMod)) && IsToggleableUnsafe(t);
     }
-
     public static bool IsToggleable(Type t)
     {
       if (!t.IsSubclassOf(typeof(FauxMod)))
@@ -34,6 +23,15 @@ namespace QoL.Modules
 
       return IsToggleableUnsafe(t);
     }
+
+    protected FauxMod() { }
+
+    protected FauxMod(bool enabled) => DefaultState = enabled;
+
+    internal bool IsLoaded { get; set; }
+
+    [PublicAPI]
+    internal void Log(object obj) => Logger.Log($"[QoL : {GetType().Name}] - {obj}");
 
     private static bool IsToggleableUnsafe(Type t) => t.GetMethod(nameof(Unload))!.DeclaringType != typeof(FauxMod);
   }

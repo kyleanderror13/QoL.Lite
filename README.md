@@ -2,7 +2,7 @@
 
 This is a Hollow Knight quality of life mod specifically created to support runners intending to have a hitless run verified with Team Hitless.
 
-The original source was forked from [Yusuf Bham's speedrunning-focused QoL mod](https://github.com/fifty-six/HollowKnight.QoL) and then adjusted to meet Team Hitless rule requirements.
+The original source was forked from [Yusuf Bham's speedrunning-focused QoL mod](https://github.com/fifty-six/HollowKnight.QoL) and then adjusted by [greyfirey](https://github.com/greyfirey/QoLthLegal/) and then kyleanderror13 to meet Team Hitless rule requirements.
 
 ## Features
 

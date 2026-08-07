@@ -9,15 +9,17 @@ namespace QoL.Modules
   [UsedImplicitly]
   public class FixVolume : FauxMod
   {
-    [SerializeToSetting]
-    public static float DoubleDamageVolumeModifier = .8f;
-
     public static float Volume => GameManager.instance.GetImplicitCinematicVolume();
 
     public override void Initialize()
     {
       On.HeroController.StartRecoil += StartRecoil;
       UnityEngine.SceneManagement.SceneManager.activeSceneChanged += SceneChanged;
+    }
+    public override void Unload()
+    {
+      On.HeroController.StartRecoil -= StartRecoil;
+      UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= SceneChanged;
     }
 
     private static void SceneChanged(Scene arg0, Scene arg1)
@@ -34,25 +36,11 @@ namespace QoL.Modules
           source.volume = Volume;
       }
     }
-
-    private static IEnumerator StartRecoil
-    (
-        On.HeroController.orig_StartRecoil orig,
-        HeroController self,
-        CollisionSide impactside,
-        bool spawndamageeffect,
-        int damageamount
-    )
+    private static IEnumerator StartRecoil(On.HeroController.orig_StartRecoil orig, HeroController self, CollisionSide impactside, bool spawndamageeffect, int damageamount)
     {
-      self.takeHitDoublePrefab.GetComponent<AudioSource>().volume = Mathf.Clamp(Volume * DoubleDamageVolumeModifier, 0, 1);
+      self.takeHitDoublePrefab.GetComponent<AudioSource>().volume = Mathf.Clamp(Volume * 0.8f, 0, 1);
 
       yield return orig(self, impactside, spawndamageeffect, damageamount);
-    }
-
-    public override void Unload()
-    {
-      On.HeroController.StartRecoil -= StartRecoil;
-      UnityEngine.SceneManagement.SceneManager.activeSceneChanged -= SceneChanged;
     }
   }
 }
