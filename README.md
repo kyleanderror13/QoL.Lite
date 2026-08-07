@@ -10,13 +10,12 @@ The original source was forked from [Yusuf Bham's speedrunning-focused QoL mod](
 - Reduced dialogue box delay.
 - Reduced menu fade in/out speed.
 - Reduced time to transition between scenes.
+- Removed charm equipping explanation on first time charm pick up.
 - Ability to reduce the volume of double-damage hits.
 - Instant stag appearance on stag station bell ring.
 - Enables additional cutscenes to be skipped.
 - Reduced time of specific cutscenes (abyss shriek collection, first time Godhome visit, Black Egg opening, post-King's Brand escape, Hall of Gods statues).
 - Path of Pain can be done multiple times on one save.
-- Saves now have a .json copy which can be edited to modify saves easily.
-- (Disabled by default) Can lock mouse cursor to game window.
 
 ## Changes from original QoL mod
 
@@ -26,3 +25,5 @@ The original source was forked from [Yusuf Bham's speedrunning-focused QoL mod](
 - Removed dev features for stacktraces and Unity logging.
 - Removed First Time Bosses, Absolute Radiance, Pure Vessel Roar and Soul Master Phase Transition Skip options.
 - Fixed issue where selling rancid eggs to Jinn would always give 450 geo, rather than the expected 290-449 range.
+- Removed ability to lock mouse cursor to game window.
+- Removed .json copy of save files.
