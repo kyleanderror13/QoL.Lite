@@ -1,4 +1,4 @@
-# HollowKnight QoL.Lite
+# Hollow Knight QoL.Lite
 
 This is a Hollow Knight quality of life mod specifically created to support runners intending to have a hitless run verified with Team Hitless.
 
